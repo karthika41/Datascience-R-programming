@@ -1,20 +1,32 @@
-setwd("D:/DataScience")
+library(tidyverse)
+library(grid)
+library(gridExtra)
+library(forcats)
+library(modelr)
+library(caret)
+library(kknn)
 
-data <- read.csv("iris.csv")
-data
+iris <- as_tibble(iris)
+summary(iris)
 
-library(janitor)
-data2<-clean_names(data)
-data2
+sapply(iris,class)
+map(iris,sd)
+map(iris,mean)
 
-data3<- remove_empty(data2, which = c("rows","cols"), quiet = FALSE)
-## Removing 1 empty rows of 8 rows total (12.5%).
-## No empty columns to remove.
-data3
+# CREATE A FUNCTION
+na_data <- function(x){
+  sum(is.na(x))/length(x)*100
+}
+#WHY DOES IT NEED THE /LENGTH*100??
+na_data2 <- function(x){
+  sum(is.na(x))
+}
+#loop it over our dataset
+apply(long_iris,2,na_data2)
 
-library(dplyr)
-data_cleaned <- distinct(data3)
-data_cleaned
-
-data_cleaned2 <- distinct(data_cleaned, petal_length, .keep_all = TRUE)
-data_cleaned2 
+long_iris <- iris %>% 
+  gather(key= 'part', value = 'value', Sepal.Length, Sepal.Width, Petal.Length, Petal.Width) %>%
+  separate(part,c('part','measure'), sep = '\\.')
+  
+  factors <- c('part','measure')
+long_iris[factors] <- lapply(long_iris[factors],as.factor)
